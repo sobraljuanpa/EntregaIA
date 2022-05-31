@@ -21,9 +21,9 @@ def optimal_policy(state, Q):
 bins = np.linspace(-0.2095, 0.2095, 12) #armamos los bins en los q clasificar observaciones
 
 def get_state(obs_radang):
-    return np.digitize(obs_radang, bins) -1 #nos dice en que bin cae cada observacion
+    return np.digitize(obs_radang, bins) #nos dice en que bin cae cada observacion
 
-Q = np.zeros((12,2))
+Q = np.zeros((13,2))
 
 # #defino params de entrenamiento
 epsilon = 0.9
@@ -37,7 +37,7 @@ def update_q(state, action, reward, new_state):
         """
         Q[state][action] += (learning_rate * (reward + discount_factor * np.max(Q[new_state]) - Q[state][action]))
 
-for episode in range(100):
+for episode in range(1000):
     obs = env.reset()
     current_state = get_state(obs[2])
     done = False
