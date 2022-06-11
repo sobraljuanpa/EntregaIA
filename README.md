@@ -17,7 +17,7 @@ Es decir, si luego de aplicar q learning, la performance de nuestro agente es en
 
 Para un primer approach con q learning pero limitandonos a un unico factor, vamos a tomar en cuenta unicamente un factor de los obtenidos en funcion del cual determinar las acciones. 
 
-Hay 3 factores a tener en cuenta diseñando un sistema de Q-Learning:
+Hay tres factores a tener en cuenta diseñando un sistema de Q-Learning:
 
 1. Estados
 2. Acciones
@@ -41,13 +41,21 @@ el simulador, parámetros utilizados, tiempo de ejecución y resultados obtenido
 # Ejercicio 1
 
 ## Intro problema
+
+El problema planteado al equipo fue realizar un sistema de estabilizacion de una nave espacial completamente automatica y no tripulada con destino al planeta Marte. Para la resolución de dicho problema se decidio utilizar la tecnica Q-Learning. Está tecnica se basa en el aprendizaje reforzado basado en el cambio de estados y retroalimentacion.
+Hay 3 factores a tener en cuenta diseñando :
+
+1. Estados
+2. Acciones
+3. Recompensas
+
 ## Abordaje
 
 ## Interaccion con el simulador
 
 La interacción con el simulador fue llevada a cabo dentro de un ambiente gym del tipo cartpole v1 (version limita cantidad max de iteraciones).
 
-Cada paso nos daba como resultado una percepción con 4 datos, los cuales en un principio no utilizamos, y terminamos utilizando para mejorar la performance de nuestro agente.
+Cada paso nos daba como resultado una percepción con 4 datos, los cuales en un principio no utilizamos en su totalidad, y terminamos utilizando para mejorar la performance de nuestro agente.
 
 ## Params utilizados
 
@@ -67,13 +75,15 @@ A la hora de armar los buckets/bins, tuvimos en cuenta varias cosas que observam
 
 La primera es que los valores de posicion del carro y ángulo del palo tenían un rango mayor al que se iban a encontrar la mayoría de las lecturas. Por ejemplo, en el caso de la posición, los valores posibles eran entre -4.8 y 4.8, pero si el carro salía del rango (-2.4,2.4) el juego se terminaba, por lo cual a la hora de armar los buckets los hicimos con los rangos en los que iban a estar la mayoria de valores.
 
-Tambien se hizo esto con la velocidad angular luego de realizar varias simulaciones y mirar los valores obtenidos.
+Tambien se realizo esto con la velocidad angular luego de realizar varias simulaciones y analizar los valores obtenidos se tomo la decision de acotar el rango de valores.
 
 ## Tiempo de ejecucion
 
 Se realizaron varias iteraciones de entrenamiento y simulacion con el agente entrenado, en general, las de entrenamiento fueron de entre 1 y 2 hs, con entre 1 y 10 millones de episodios (distinto hardware).
 
 A la hora de probar el agente entrenado, variaba bastante según la calidad del aprendizaje, es decir, cuando aprendía mejor, los episodios eran más largos y por lo tanto duraban más las ejecuciones, pero las pruebas que realizamos con 10 mil iteraciones para promediar el valor obtenido, no pasaban de los cinco minutos.
+
+Para minimizar y agilizar las pruebas se realizo un mecanismo para persistir los resultados de los entrenamientos anteriores.
 
 ## Resultados obtenidos
 
