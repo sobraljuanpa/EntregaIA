@@ -72,7 +72,43 @@ class GameBoard:
                 print("%6d  " % self.grid[i][j], end="")
             print("")
         print("")
-
+    
+    def justify_up(self)->None:
+        """"Justifica tablero hacia arriba"""
+        for aux in range(3):
+            for i in [1,2,3]:
+                for j in range(4):
+                    if self.grid[i - 1][j] == 0:
+                        self.grid[i - 1][j] = self.grid[i][j]
+                        self.grid[i][j] = 0
+    
+    def justify_down(self)->None:
+        """"Justifica tablero hacia abajo"""
+        for aux in range(3):
+            for i in range(3):
+                for j in range(4):
+                    if self.grid[i + 1][j] == 0:
+                        self.grid[i + 1][j] = self.grid[i][j]
+                        self.grid[i][j] = 0
+    
+    def justify_left(self)->None:
+        """"Justifica tablero hacia la izquierda"""
+        for aux in range(3):
+            for i in range(4):
+                for j in [1,2,3]:
+                    if self.grid[i][j - 1] == 0:
+                        self.grid[i][j - 1] = self.grid[i][j]
+                        self.grid[i][j] = 0
+    
+    def justify_right(self)->None:
+        """"Justifica tablero hacia la derecha"""
+        for aux in range(3):
+            for i in range(4):
+                for j in range(3):
+                    if self.grid[i][j + 1] == 0:
+                        self.grid[i][j + 1] = self.grid[i][j]
+                        self.grid[i][j] = 0
+ 
     def clone(self)->'GameBoard':
         """Me devuelve otro board igual"""
         board_clone = GameBoard()
