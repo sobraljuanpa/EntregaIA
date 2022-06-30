@@ -89,3 +89,4 @@ Finalmente, al arrancar a entrenar con más de 2 millones de episodios, arrancam
 
 PROBAR CON MAS BUCKETS PARA POSICION/VELOCIDAD (4 CADA UNO)
 PROBAR ACHICNDO EL LINSPACE DE VELOCIDAD ANGULAR (-1.5, 1.5)
+Vos quedas con model evaluation function, serializacion y deserializacion del array q, yo quedo con arrancar a investigar lo del 2048

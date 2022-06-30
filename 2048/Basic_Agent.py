@@ -1,4 +1,6 @@
 from ast import For
+from math import inf
+from operator import truediv
 from Agent import Agent
 from GameBoard import GameBoard
 import numpy as np
@@ -45,6 +47,46 @@ class BasicAgent(Agent):
 
     return count
 
+  def es_terminal(self, tablero:GameBoard):
+    if tablero.get_available_moves().__len__() == 0:
+      return True
+
+  def minimax(self, tablero:GameBoard, profundidad:int, esMax:bool):
+    if self.es_terminal(tablero) or profundidad == 0:
+      return self.heuristic_utility(tablero)
+    
+    if esMax:
+      best = -inf
+      for movida in tablero.get_available_moves():
+        auxTablero = tablero.clone()
+        auxTablero.move(movida)
+        valor = self.minimax(auxTablero, profundidad - 1, not esMax)
+        best = max(best, valor)
+      return best
+    else:
+      best = inf
+      for posicion in tablero.get_available_cells():
+        auxTablero = tablero.clone()
+        auxTablero.grid[posicion[0]][posicion[1]] = 2 # no contemplo un 4
+        valor = self.minimax(auxTablero, profundidad - 1, not esMax)
+        best = min(best, valor)
+      return best
+
+  def get_possible_states(self, board:GameBoard, move:bool):
+    """
+      Based on the current board, return a list with the possible resulting states
+    """
+    
+    if move:
+      states = [board] * board.get_available_moves()
+    else:
+      states = [board] * board.get_available_cells() # no contemplo posibilidad de que haya 4s insertados
+    
+
+    
+
+    return states
+
   def play(self, board:GameBoard):
     # Caso base, nodo hoja, mejor siguiente jugada
     values = [-1] * 4                                       # inicializo lista para almacenar los valores de las jugadas
@@ -52,8 +94,8 @@ class BasicAgent(Agent):
     for moveIndex in board.get_available_moves():           # para cada jugada posible
       auxBoard = board.clone()                              # clono tablero para simular jugada
       lost = auxBoard.move(moveIndex)                       # simulo jugada
-      values[moveIndex] += self.count_adjacencies(board, moveIndex)
-      values[moveIndex] += self.heuristic_utility(auxBoard)  # asigno valor de la heuristica a la posicion asociada a la jugada en la lista
+      values[moveIndex] += self.count_adjacencies(auxBoard, moveIndex)
+      values[moveIndex] += self.minimax(auxBoard, 5, True)
 
     print('Valor movimientos:')
     for i in range(4):
@@ -62,4 +104,4 @@ class BasicAgent(Agent):
     return np.argmax(values)
 
   def heuristic_utility(self, board: GameBoard):
-    return board.get_available_cells().__len__() # se itera sobre heuristica inicial
+    return board.get_available_cells().__len__()# agregar sumatoria de todas las posibles uniones despues de justificar en cada direccion
