@@ -226,8 +226,8 @@ class BasicAgent(Agent):
 
     def heuristic_utility(self, board: GameBoard):
         empty_titles = self.emptyTitles(board) * 100
-        smoothness = self.smoothness(board)
+        smoothness = self.smoothness(board) * 12
         max_title = self.max_title_position(board) * 5
         weighted_board = self.weighted_board(board)
         mono = self.monotonicity(board)
-        return empty_titles + max_title + weighted_board #+ smoothness + max_title 
+        return empty_titles + max_title + weighted_board + smoothness
