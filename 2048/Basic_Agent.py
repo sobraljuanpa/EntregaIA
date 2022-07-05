@@ -141,7 +141,7 @@ class BasicAgent(Agent):
 
             # Evaluo el primer movimiento, Seguro se puede mejorar la logica pero ahora no me da.
             values[moveIndex] += self.minimaxAb(auxBoard, 0, True, -np.inf, np.inf) # Chancho pero sirve por ahora
-            values[moveIndex] += self.minimaxAb(auxBoard, 5, True, -np.inf, np.inf)
+            values[moveIndex] += self.minimaxAb(auxBoard, 6, True, -np.inf, np.inf)
             # values[moveIndex] += self.minimax(auxBoard, 2, True)
 
         print('Valor movimientos:')
@@ -178,11 +178,11 @@ class BasicAgent(Agent):
         if len(availableMoves) > 0:
             for r in auxTablero.grid:  # Me guardo fila.
                 for i in range(2):
-                    smothness += abs(r[i] - r[i + 1])
+                    smothness -= abs(r[i] - r[i + 1])
                     pass
             for j in range(3):
                 for k in range(2):
-                    smothness += abs(auxTablero.grid[k]
+                    smothness -= abs(auxTablero.grid[k]
                                      [j] - auxTablero.grid[k+1][j])
 
         return smothness
@@ -224,10 +224,19 @@ class BasicAgent(Agent):
 
         return mono
 
+    def talesValues(self, board: GameBoard):
+        totalValue = 0
+        for i in range(3):
+            for j in range(3):
+                totalValue += board.grid[i][j] ** 2
+        
+        return totalValue
+
     def heuristic_utility(self, board: GameBoard):
         empty_titles = self.emptyTitles(board) * 100
         smoothness = self.smoothness(board) * 12
         max_title = self.max_title_position(board) * 5
         weighted_board = self.weighted_board(board)
-        mono = self.monotonicity(board)
-        return empty_titles + max_title + weighted_board + smoothness
+        mono = self.monotonicity(board) * 80
+        totalValue = self.talesValues(board)
+        return empty_titles + max_title + weighted_board + totalValue + mono 
