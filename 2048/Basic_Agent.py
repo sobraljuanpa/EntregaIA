@@ -10,10 +10,10 @@ import numpy as np
 
 MAX_TITLE_CREDIT = 10e4
 WEIGHT_MATRIX = [
-    [2048, 1024, 64, 32],
-    [512, 128, 16, 2],
-    [256, 8, 2, 1],
-    [4, 2, 1, 1]
+    [4**15, 4**14, 4**13, 4**12],
+    [4**8, 4**9, 4**10, 4**11],
+    [4**7, 4**6, 4**5, 4**4],
+    [4**0, 4**1, 4**2, 4**3]
 ]
 
 
@@ -23,40 +23,6 @@ class BasicAgent(Agent):
 
     def init(self):
         pass
-
-    def count_adjacencies(self, board: GameBoard, direction: int):
-        count = 0
-        auxBoard = board.clone()
-        if direction == 0:
-            auxBoard.justify_up()
-            for aux in range(3):
-                for i in [1, 2, 3]:
-                    for j in range(4):
-                        if auxBoard.grid[i - 1][j] == auxBoard.grid[i][j] and auxBoard.grid[i][j] != 0:
-                            count += 1
-        if direction == 1:
-            auxBoard.justify_down()
-            for aux in range(3):
-                for i in range(3):
-                    for j in range(4):
-                        if auxBoard.grid[i + 1][j] == auxBoard.grid[i][j] and auxBoard.grid[i][j] != 0:
-                            count += 1
-        if direction == 2:
-            auxBoard.justify_left()
-            for aux in range(3):
-                for i in range(4):
-                    for j in [1, 2, 3]:
-                        if auxBoard.grid[i][j - 1] == auxBoard.grid[i][j] and auxBoard.grid[i][j] != 0:
-                            count += 1
-        if direction == 3:
-            auxBoard.justify_right()
-            for aux in range(3):
-                for i in range(4):
-                    for j in range(3):
-                        if auxBoard.grid[i][j + 1] == auxBoard.grid[i][j] and auxBoard.grid[i][j] != 0:
-                            count += 1
-
-        return count
 
     def es_terminal(self, tablero: GameBoard):
         if tablero.get_available_moves().__len__() == 0:
@@ -110,17 +76,17 @@ class BasicAgent(Agent):
             return best
         else:
             best = inf
-            # for posicion in tablero.get_available_cells(): ## Me parece que tendria que ser en los bordes, no te puede clavar un 2 en el medio del tablero.
-            availableCells = tablero.get_available_cells()
-            cell = availableCells[random.randint(0, len(availableCells) - 1)]
-            auxTablero = tablero.clone()
+            for posicion in tablero.get_available_cells():
+                # availableCells = tablero.get_available_cells()
+                # cell = availableCells[random.randint(0, len(availableCells) - 1)]
+                auxTablero = tablero.clone()
 
-            auxTablero.grid[cell[0]][cell[1]] = self.randomNumberToInsert()
-            valor = self.minimaxAb(auxTablero, profundidad - 1, True, alpha, beta)
-            best = min(best, valor)
-            if best <= alpha:
-                return best
-            beta = min(beta, best)
+                auxTablero.grid[posicion[0]][posicion[1]] = self.randomNumberToInsert()
+                valor = self.minimaxAb(auxTablero, profundidad - 1, True, alpha, beta)
+                best = min(best, valor)
+                if best <= alpha:
+                    return best
+                beta = min(beta, best)
             return best
 
     def isBorder (self, row, column):
@@ -132,7 +98,7 @@ class BasicAgent(Agent):
         values = [-1] * 4
 
         availableMoves = board.get_available_moves()
-        print('Available moves ' + str(availableMoves))
+        # print('Available moves ' + str(availableMoves))
         for moveIndex in availableMoves:           # para cada jugada posible
             # clono tablero para simular jugada
             auxBoard = board.clone()
@@ -141,23 +107,18 @@ class BasicAgent(Agent):
 
             # Evaluo el primer movimiento, Seguro se puede mejorar la logica pero ahora no me da.
             values[moveIndex] += self.minimaxAb(auxBoard, 0, True, -np.inf, np.inf) # Chancho pero sirve por ahora
-            values[moveIndex] += self.minimaxAb(auxBoard, 6, True, -np.inf, np.inf)
-            # values[moveIndex] += self.minimax(auxBoard, 2, True)
+            values[moveIndex] += self.minimaxAb(auxBoard, 4, True, -np.inf, np.inf)
 
-        print('Valor movimientos:')
-        for i in range(4):
-            print(self.int_to_string[i], ': ', values[i])
+        # print('Valor movimientos:')
+        # for i in range(4):
+            # print(self.int_to_string[i], ': ', values[i])
 
-        print('Valor np.argmax evaluando: {}'.format(np.amax(values)))
         if np.amax(values) >= 0:
             max = np.argmax(values)
         else:
             max = self.obtainMax(values)
-        print('Valor np.argmax de values: {}'.format(max))
+        # print('Valor np.argmax de values: {}'.format(max))
 
-        # if not max in availableMoves:  # ARREGLAR ESTO DESPUES.
-        #     print('Pinto la tensovich')
-        #     return random.choice(availableMoves)
         return max
 
     def obtainMax(self, values):
@@ -170,22 +131,6 @@ class BasicAgent(Agent):
 
     def emptyTitles(self, board: GameBoard):
         return board.get_available_cells().__len__()
-
-    def smoothness(self, tablero: GameBoard):
-        auxTablero = tablero.clone()
-        smothness = 0
-        availableMoves = tablero.get_available_moves()
-        if len(availableMoves) > 0:
-            for r in auxTablero.grid:  # Me guardo fila.
-                for i in range(2):
-                    smothness -= abs(r[i] - r[i + 1])
-                    pass
-            for j in range(3):
-                for k in range(2):
-                    smothness -= abs(auxTablero.grid[k]
-                                     [j] - auxTablero.grid[k+1][j])
-
-        return smothness
 
     def max_title_position(self, tablero: GameBoard):
         max_title = tablero.get_max_tile()
@@ -202,6 +147,22 @@ class BasicAgent(Agent):
                 result += tablero.grid[i][j] * WEIGHT_MATRIX[i][j]
 
         return result
+        
+    def smoothness(self, tablero: GameBoard):
+        auxTablero = tablero.clone()
+        smothness = 0
+        availableMoves = tablero.get_available_moves()
+        if len(availableMoves) > 0:
+            for r in auxTablero.grid:  # Me guardo fila.
+                for i in range(2):
+                    smothness -= abs(r[i] - r[i + 1])
+                    pass
+            for j in range(3):
+                for k in range(2):
+                    smothness -= abs(auxTablero.grid[k]
+                                     [j] - auxTablero.grid[k+1][j])
+
+        return smothness
 
     def monotonicity(self, board: GameBoard):
         mono = 0
@@ -234,9 +195,9 @@ class BasicAgent(Agent):
 
     def heuristic_utility(self, board: GameBoard):
         empty_titles = self.emptyTitles(board) * 100
-        smoothness = self.smoothness(board) * 12
-        max_title = self.max_title_position(board) * 5
+        # smoothness = self.smoothness(board) ** 4
+        max_title = self.max_title_position(board) * 6
         weighted_board = self.weighted_board(board)
-        mono = self.monotonicity(board) * 80
+        mono = self.monotonicity(board) * 800
         totalValue = self.talesValues(board)
-        return empty_titles + max_title + weighted_board + totalValue + mono 
+        return empty_titles + max_title + weighted_board + totalValue + mono
