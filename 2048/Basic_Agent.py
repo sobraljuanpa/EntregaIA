@@ -53,7 +53,7 @@ class BasicAgent(Agent):
             for posicion in tablero.get_available_cells():
                 auxTablero = tablero.clone()
                 # no contemplo un 4
-                auxTablero.grid[posicion[0]][posicion[1]] = 2
+                auxTablero.grid[posicion[0]][posicion[1]] = self.randomNumberToInsert()
                 valor = self.minimax(auxTablero, profundidad - 1, not esMax)
                 best = min(best, valor)
             return best
@@ -77,8 +77,6 @@ class BasicAgent(Agent):
         else:
             best = inf
             for posicion in tablero.get_available_cells():
-                # availableCells = tablero.get_available_cells()
-                # cell = availableCells[random.randint(0, len(availableCells) - 1)]
                 auxTablero = tablero.clone()
 
                 auxTablero.grid[posicion[0]][posicion[1]] = self.randomNumberToInsert()
@@ -103,21 +101,15 @@ class BasicAgent(Agent):
             # clono tablero para simular jugada
             auxBoard = board.clone()
             lost = auxBoard.move(moveIndex)                       # simulo jugada
-            # values[moveIndex] += self.count_adjacencies(auxBoard, moveIndex)
 
             # Evaluo el primer movimiento, Seguro se puede mejorar la logica pero ahora no me da.
             values[moveIndex] += self.minimaxAb(auxBoard, 0, True, -np.inf, np.inf) # Chancho pero sirve por ahora
-            values[moveIndex] += self.minimaxAb(auxBoard, 4, True, -np.inf, np.inf)
-
-        # print('Valor movimientos:')
-        # for i in range(4):
-            # print(self.int_to_string[i], ': ', values[i])
+            values[moveIndex] += self.minimaxAb(auxBoard, 1, True, -np.inf, np.inf)
 
         if np.amax(values) >= 0:
             max = np.argmax(values)
         else:
             max = self.obtainMax(values)
-        # print('Valor np.argmax de values: {}'.format(max))
 
         return max
 
@@ -135,9 +127,9 @@ class BasicAgent(Agent):
     def max_title_position(self, tablero: GameBoard):
         max_title = tablero.get_max_tile()
         if tablero.grid[0][0] == max_title:
-            return 5000
+            return 500000
         else:
-            return -5000
+            return -500000
 
     def weighted_board(self, board: GameBoard):
         result = 0
@@ -194,10 +186,10 @@ class BasicAgent(Agent):
         return totalValue
 
     def heuristic_utility(self, board: GameBoard):
-        empty_titles = self.emptyTitles(board) * 100
-        # smoothness = self.smoothness(board) ** 4
-        max_title = self.max_title_position(board) * 6
+        empty_titles = self.emptyTitles(board) * 340
+        smoothness = self.smoothness(board) * 100
+        max_title = self.max_title_position(board) * 55
         weighted_board = self.weighted_board(board)
-        mono = self.monotonicity(board) * 800
+        mono = self.monotonicity(board) * 18
         totalValue = self.talesValues(board)
         return empty_titles + max_title + weighted_board + totalValue + mono
