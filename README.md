@@ -1,3 +1,7 @@
+# INTRODUCCION
+
+Obligatorio de IA, por Federico Carbonell (224359) y Juan Pablo Sobral (192247)
+
 # Ejercicio 1
 
 ## Intro problema
@@ -11,12 +15,26 @@ Hay 3 factores a tener en cuenta diseñando :
 
 ## Abordaje
 
+Pueden ver el entrenamiento realizado en el archivo ```training.py```, si se quiere probar alguno de los modelos respaldados, hacerlo usando el ```simulateFromQModel.py```, quedan adjuntados notebooks relevantes en la carpeta html y cuando se haga referencia a algun .html se lo va a encontrar ahi. Tambien dejamos disponible una carpeta notebooks en la cual encontrar notebooks usados en el desarrollo de las tareas.
+
 ### Interaccion con el simulador
 
 La interacción con el simulador fue llevada a cabo dentro de un ambiente gym del tipo cartpole v1 (version limita cantidad max de iteraciones).
 
 Cada paso nos daba como resultado una percepción con 4 datos, los cuales en un principio no utilizamos en su totalidad, y terminamos utilizando para mejorar la performance de nuestro agente.
 
+Bitacora de primeras interacciones:
+
+``` python
+# Se agrega una segunda dimension, si se entrena con 1000 episodios son pocos para la cantidad de posibles estados (pasa de 12 a 120)
+# y muestra performance promedio peor que la iteracion previa solamente con 12 estados.
+# Se arranca a entrenar con 10000 episodios y tomar muestreos promedio del valor de la policy con 10000 episodios tambien.
+# Se arrancan a ver valores arriba de 22 con constancia (con 10 bins, rango de -5 a 5), pero se ven muchos bins vacios o semi vacios
+
+# Se sugiere probar cambiar el rango a valores mas cercanos a los observados (-2.5 a 2.5) y aumentra la cant de episodios.
+# Con un espacio de 10 para la posicion, 5 para las velocidades como descrito rpeviamente, con 10k episodios de entrenamiento
+# el valor esperado es de aprox 150
+```
 ### Params utilizados
 
 
@@ -40,10 +58,12 @@ Cuando arrancamos a ejecutar pruebas y ver los Q resultantes de estos buckets, n
 Fue por eso que tomamos la decisión de realizar las pruebas que se van a encontrar en el archivo ```graphs.ipynb```, para determinar de manera correcta como utilizar los buckets para obtener una distribucion al menos similar a normal. No buscamos una distribucion uniforme porque claramente los episodios tendian a distribuirse de otra forma, y el valor que iban a agregar en esos valores borde estaria mejor utilizado aprovechando a actualizar mas los valores mas utilizados.
 
 Fue por eso que finalmente acotamos los espacios lineales de la siguiente manera:
-    . Posicion -0.2 a 0.2
-    . Velocidad -1 a 1
-    . Angulo -0.25 a 0.25
-    . Velocidad Angular -1.5 a 1.5
+| Parámetro                  | Min           | Max  |
+| :------------------------: |:------------: | :---:|
+| Posición del carro         | -0.2 | 0.2 |
+| Velocidad del carro        | -1 | 1 |
+| Ángulo del palo            | -0.25 | 0.25 |
+| Velocidad angular del palo | -1.5 | 1.5 |
 
 Haciendo esto y trabajando la cantidad de buckets utilizados para cada param, logramos obtener una matriz Q mucho mas densa y mejor calculada que nuestros primeros intentos.
 
@@ -69,13 +89,37 @@ La evidencia de estas ejecuciones, se encuentra en los archivos third_approachJP
 
 ## Performance y Resultados
 
-Resultados pruebas con distinta cantidad de buckets.
-Resultados pruebas evaluados utilizando una funcion que descartaba resultados de los bordes
+### Variacion de buckets
 
-PROBAR CON MAS BUCKETS PARA POSICION/VELOCIDAD (4 CADA UNO)
-PROBAR ACHICNDO EL LINSPACE DE VELOCIDAD ANGULAR (-1.5, 1.5)
-Vos quedas con model evaluation function, serializacion y deserializacion del array q, yo quedo con arrancar a investigar lo del 2048
+Al variar la cantidad de buckets, principalmente vemos dos factores.
 
+El primero es que a mayor cantidad de buckets, más episodios de entrenamiento son necesarios para obtener una matriz de valores Q util.
+
+El segundo es que cuantos mas buckets usamos para un valor, es altamente probable que los de las puntas vayan quedando sin ser utilizados nunca, por lo cual no aportan y tienen un costo.
+
+Al final decidimos utilizar dos variaciones: 2,2,12,10 y 2,2,6,6.
+
+### Variacion de cantidad de episodios de entrenamiento
+
+Como mencionabamos en el punto anterior, la cantidad de episodios de entrenamientos requeridos para generar una matriz relativamente util va de la mano de la cantidad de casilleros de la matriz, y la densidad de la distribucion de valores en la misma.
+
+Una de nuestras preubas intermedias, con 50 buckets, entrenada con 10mil episodios daba como resultado un valor esperado de aprox 150. Asumiendo una relacion lineal, para los buckets que terminamos utilizando esto deberia
+
+En nuestra experiencia, con menos de 2 millones de iteraciones con estas matrices de aprox 500 casilleros, no se obtienen valores interesantes luego al utilizar la matriz como parte de una policy.
+
+### Resultados finales
+
+Logramos las mejores ejecuciones luego de una sesion de entrenamientos con 2 millones de episodios, con la distribucion de buckets 2,2,12,10 y los rangos:
+
+| Parámetro                  | Min           | Max  |
+| :------------------------: |:------------: | :---:|
+| Posición del carro         | -inf | inf |
+| Velocidad del carro        | -inf | inf |
+| Ángulo del palo            | -0.2095 | 0.2095 |
+| Velocidad angular del palo | -2.5 | 2.5 |
+
+La cual luego de 10 mil ejecuciones, dio de minimo de recompensas acumuladas 250, maximo 500 y promedio 483.3
+Esta ejecucion esta registrada en el notebook ```third_approachJP.ipynb```
 # Ejercicio 2 
 
 ## Intro problema
@@ -88,7 +132,7 @@ Explicar nuestra implementacion de pruning.
 
 ## Interaccion con el simulador
 
-Las interacciones con el simulador fueron bastante menos interesantes en este caso,
+Las interacciones con el simulador fueron bastante menos interesantes en este caso, nos apoyamos mucho en las funciones auxiliares para obtener los casilleros libres y la cantidad de movimientos, a la hora de establecer los posibles en nuestro minimax, y a la hora de calcular una de las heuristicas utilizadas para obtener el valor de el tablero.
 
 ## Funcion de evaluacion
 ### Pruebas iniciales
