@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 # Declare constants for buckets.
 POSITION_SIZE = 2
 VELOCITY_SIZE = 2
-ANGLE_BINS_SIZE = 6
-ANGULAR_VELOCITY_BINS_SIZE = 6
+ANGLE_BINS_SIZE = 5
+ANGULAR_VELOCITY_BINS_SIZE = 5
 
 position_bins = np.linspace(-0.2, 0.2, POSITION_SIZE)
 velocity_bins = np.linspace(-1,1, VELOCITY_SIZE)
-angle_bins = np.linspace(-0.25, 0.25, ANGLE_BINS_SIZE)
+angle_bins = np.linspace(-0.2, 0.2, ANGLE_BINS_SIZE)
 angular_velocity_bins = np.linspace(-1.5, 1.5, ANGULAR_VELOCITY_BINS_SIZE)
 
 discount_factor = 0.9
@@ -68,7 +68,7 @@ start = time.time()
 epsilon = 0.1
 learning_rate = 0.9
 
-episodes_of_training = 1000000
+episodes_of_training = 1500000
 # Array to analyze the training.
 steps = [0] * episodes_of_training
 
