@@ -175,6 +175,12 @@ Nuestra función de evaluación esta compuesta por:
  - Valor total: 
     Sumando todos los valores del tablero logramos saber qué tan cerca de ganar nos encontramos.
 
+### Resultados obtenidos
+
+Los resultados obtenidos fueron buenos, logramos obtener entre un 20% y 50% o incluso un poco mas de partidas ganadas aproximadamente. El resto de las partidas obtuvieron un alto porcentaje de 1024's y los que obtuvieron un resultado peor el porcentaje fue despreciable.
+
+Las pruebas masivas ejecutadas fueron con profundidad 2 ya que al empezar a sumar el tiempo de ejecucion crecia exponencialmente. Comentamos esto ya que al incrementar la profundidad, los resultados mejorán ampliamente ya que las evaluaciones son mas completas.
+
 # Conclusión
 
 A opinión de ambos, sin la parte práctica de esta materia la parte teórica sería mucho más compleja de seguir, ambos sentimos que el momento de máxima comprensión y LOCURA fue alcanzado al arrancar a trabajar sobre los distintos ejercicios, principalmente al salir a buscar más info sobre como implementar los algoritmos y sus distintos detalles.
